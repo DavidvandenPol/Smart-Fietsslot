@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fietsslot</title>
+</head>
+<body>
+    <div style="margin: auto">
+        <iframe id="googleMapsIframe" height="500px" width="100%"></iframe>
+    </div>
+
+    <script>
+        function loadGoogleMaps() {
+            console.log("Google Maps is loaded");
+
+            const googleMapsIframe = document.getElementById("googleMapsIframe");
+            const latitude = 52.0;
+            const longitude = 6.23;
+            googleMapsIframe.src = `https://maps.google.com/maps?q=${latitude},${longitude}&hl=nl;&output=embed`;
+        }
+
+        window.addEventListener("load", loadGoogleMaps);
+    </script>
+</body>
+</html>
