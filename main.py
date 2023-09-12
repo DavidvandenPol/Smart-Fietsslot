@@ -6,19 +6,19 @@ sense = SenseHat()
 acceleration_threshold = 1
 speed_threshold = 2
 
-prev_acceleration = None
-speed_notification_time = None
-knipper_interval = 0.5
-knipper_duration = 10
+prevAcceleration = None
+speedNotificationTime = None
+blinkInterval = 0.5
+blinkDuration = 10
 measuring = False
-show_red_lock = False
+showRedLock = False
 
 r = (255, 0, 0)
 b = (0, 0, 0)
 g = (0, 255, 0)
 w = (255, 255, 255)
 
-open_lock_icon = [
+openLockIcon = [
     b, b, b, g, g, b, b, b,
     b, b, g, b, b, g, b, b,
     b, b, g, b, b, g, b, b,
@@ -29,7 +29,7 @@ open_lock_icon = [
     b, g, g, g, g, g, g, b
 ]
 
-lock_icon = [
+lockIcon = [
     b, b, b, w, w, b, b, b,
     b, b, w, b, b, w, b, b,
     b, b, w, b, b, w, b, b,
@@ -40,7 +40,7 @@ lock_icon = [
     b, w, w, w, w, w, w, b
 ]
 
-closed_lock_icon = [
+closedLockIcon = [
     b, b, b, r, r, b, b, b,
     b, b, r, b, b, r, b, b,
     b, b, r, b, b, r, b, b,
@@ -57,12 +57,12 @@ while True:
         if event.action == "pressed" and event.direction == "middle":
             if measuring:
                 measuring = False
-                speed_notification_time = None
-                sense.set_pixels(open_lock_icon)
+                speedNotificationTime = None
+                sense.set_pixels(openLockIcon)
                 print("Meten gestopt.")
             else:
                 measuring = True
-                sense.set_pixels(open_lock_icon)
+                sense.set_pixels(openLockIcon)
                 print("Meten gestart.")
 
     if measuring:
@@ -75,37 +75,37 @@ while True:
         y = abs(y)
         z = abs(z)
 
-        if prev_acceleration is not None:
-            delta_x = abs(x - prev_acceleration['x'])
-            delta_y = abs(y - prev_acceleration['y'])
-            delta_z = abs(z - prev_acceleration['z'])
+        if prevAcceleration is not None:
+            delta_x = abs(x - prevAcceleration['x'])
+            delta_y = abs(y - prevAcceleration['y'])
+            delta_z = abs(z - prevAcceleration['z'])
 
             total_delta = delta_x + delta_y + delta_z
 
             if total_delta > acceleration_threshold:
-                if speed_notification_time is None:
-                    speed_notification_time = time.time()
-                    show_red_lock = True
+                if speedNotificationTime is None:
+                    speedNotificationTime = time.time()
+                    showRedLock = True
                 print("Verschillingsmelding: Grote verandering in versnelling!")
 
-            if speed_notification_time is not None:
-                if time.time() - speed_notification_time >= knipper_duration:
-                    speed_notification_time = None
-                    show_red_lock = False
-                elif (time.time() - speed_notification_time) % (2 * knipper_interval) < knipper_interval:
-                    show_red_lock = False
+            if speedNotificationTime is not None:
+                if time.time() - speedNotificationTime >= blinkDuration:
+                    speedNotificationTime = None
+                    showRedLock = False
+                elif (time.time() - speedNotificationTime) % (2 * blinkInterval) < blinkInterval:
+                    showRedLock = False
                 else:
-                    show_red_lock = True
+                    showRedLock = True
 
-        prev_acceleration = acceleration
+        prevAcceleration = acceleration
 
     if measuring:
-        if show_red_lock:
-            sense.set_pixels(closed_lock_icon)
+        if showRedLock:
+            sense.set_pixels(closedLockIcon)
         else:
-            sense.set_pixels(lock_icon)
+            sense.set_pixels(lockIcon)
     else:
-        sense.set_pixels(open_lock_icon)
+        sense.set_pixels(openLockIcon)
 
     if measuring:
         print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
