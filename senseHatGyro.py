@@ -12,6 +12,7 @@ blinkInterval = 0.5
 blinkDuration = 10
 measuring = False
 showRedLock = False
+showNoLock = False
 
 r = (255, 0, 0)
 b = (0, 0, 0)
@@ -49,6 +50,17 @@ closedLockIcon = [
     b, r, r, r, r, r, r, b,
     b, r, r, r, r, r, r, b,
     b, r, r, r, r, r, r, b
+]
+
+noIcon = [
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, b
 ]
 
 while True:
@@ -94,6 +106,7 @@ while True:
                     showRedLock = False
                 elif (time.time() - speedNotificationTime) % (2 * blinkInterval) < blinkInterval:
                     showRedLock = False
+                    showNoLock = True
                 else:
                     showRedLock = True
 
@@ -102,6 +115,9 @@ while True:
     if measuring:
         if showRedLock:
             sense.set_pixels(closedLockIcon)
+        elif showNoLock:
+            sense.set_pixels(noIcon)
+            showNoLock = False
         else:
             sense.set_pixels(lockIcon)
     else:
