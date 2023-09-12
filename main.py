@@ -3,23 +3,20 @@ import time
 
 sense = SenseHat()
 
-# Drempelwaarden voor versnelling en snelheid van verandering
 acceleration_threshold = 1
 speed_threshold = 2
 
 prev_acceleration = None
 speed_notification_time = None
-knipper_interval = 0.5  # Interval van 0,5 seconde (2 keer per seconde)
-knipper_duration = 10  # Knipperen gedurende 10 seconden
-measuring = False  # Houdt bij of we aan het meten zijn of niet
+knipper_interval = 0.5
+knipper_duration = 10 
+measuring = False
 
-# Kleuren voor het sloticoontje
-r = (255, 0, 0)  # Rood
-b = (0, 0, 0)    # Zwart (uit)
-g = (0, 255, 0)  # Groen
-w = (255, 255, 255)  # Wit
+r = (255, 0, 0)
+b = (0, 0, 0)
+g = (0, 255, 0)
+w = (255, 255, 255)
 
-# Het sloticoontje als een lijst van pixels
 open_lock_icon = [
     b, b, b, g, g, b, b, b,
     b, b, g, b, b, g, b, b,
@@ -54,18 +51,18 @@ closed_lock_icon = [
 ]
 
 while True:
-    events = sense.stick.get_events()  # Krijg joystick events
+    events = sense.stick.get_events()
     
     for event in events:
         if event.action == "pressed" and event.direction == "middle":
             if measuring:
                 measuring = False
                 speed_notification_time = None
-                sense.set_pixels(open_lock_icon)  # Toon een wit slotje
+                sense.set_pixels(open_lock_icon)
                 print("Meten gestopt.")
             else:
                 measuring = True
-                sense.set_pixels(open_lock_icon)  # Toon een wit slotje
+                sense.set_pixels(open_lock_icon)
                 print("Meten gestart.")
     
     if measuring:
@@ -86,29 +83,25 @@ while True:
             if delta_x > speed_threshold or delta_y > speed_threshold or delta_z > speed_threshold:
                 if speed_notification_time is None:
                     speed_notification_time = time.time()
-                    sense.set_pixels(closed_lock_icon)  # Toon een rood slotje
+                    sense.set_pixels(closed_lock_icon)
                 print("Snelheidsmelding: Versnelling veranderde snel!")
 
             if speed_notification_time is not None:
-                # Schakel het sloticoontje uit na 10 seconden
                 if time.time() - speed_notification_time >= knipper_duration:
                     speed_notification_time = None
-                    sense.set_pixels(lock_icon)  # Toon een normaal slotje (niet rood)
-                # Laat het sloticoontje knipperen tijdens de 10 seconden
+                    sense.set_pixels(lock_icon)
                 elif (time.time() - speed_notification_time) % (2 * knipper_interval) < knipper_interval:
                     sense.clear()
                 else:
-                    sense.set_pixels(closed_lock_icon)  # Toon een rood slotje
+                    sense.set_pixels(closed_lock_icon)
 
         prev_acceleration = acceleration
     
-    # Toon het juiste sloticoontje op basis van de meetstatus
     if measuring:
         sense.set_pixels(lock_icon)
     else:
         sense.set_pixels(open_lock_icon)
     
-    # Print de acceleratie in de terminal als we aan het meten zijn
     if measuring:
         print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
 
