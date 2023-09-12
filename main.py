@@ -9,8 +9,9 @@ speed_threshold = 2
 prev_acceleration = None
 speed_notification_time = None
 knipper_interval = 0.5
-knipper_duration = 10 
+knipper_duration = 10
 measuring = False
+show_red_lock = False
 
 r = (255, 0, 0)
 b = (0, 0, 0)
@@ -52,7 +53,6 @@ closed_lock_icon = [
 
 while True:
     events = sense.stick.get_events()
-    
     for event in events:
         if event.action == "pressed" and event.direction == "middle":
             if measuring:
@@ -64,7 +64,7 @@ while True:
                 measuring = True
                 sense.set_pixels(open_lock_icon)
                 print("Meten gestart.")
-    
+
     if measuring:
         acceleration = sense.get_accelerometer_raw()
         x = acceleration['x']
@@ -79,29 +79,33 @@ while True:
             delta_x = abs(x - prev_acceleration['x'])
             delta_y = abs(y - prev_acceleration['y'])
             delta_z = abs(z - prev_acceleration['z'])
-            
-            if delta_x > speed_threshold or delta_y > speed_threshold or delta_z > speed_threshold:
+
+            total_delta = delta_x + delta_y + delta_z
+
+            if total_delta > acceleration_threshold:
                 if speed_notification_time is None:
                     speed_notification_time = time.time()
-                    sense.set_pixels(closed_lock_icon)
-                print("Snelheidsmelding: Versnelling veranderde snel!")
+                    show_red_lock = True
+                print("Verschillingsmelding: Grote verandering in versnelling!")
 
             if speed_notification_time is not None:
                 if time.time() - speed_notification_time >= knipper_duration:
                     speed_notification_time = None
-                    sense.set_pixels(lock_icon)
+                    show_red_lock = False
                 elif (time.time() - speed_notification_time) % (2 * knipper_interval) < knipper_interval:
-                    sense.clear()
+                    show_red_lock = False
                 else:
-                    sense.set_pixels(closed_lock_icon)
+                    show_red_lock = True
 
         prev_acceleration = acceleration
-    
+
     if measuring:
-        sense.set_pixels(lock_icon)
+        if show_red_lock:
+            sense.set_pixels(closed_lock_icon)
+        else:
+            sense.set_pixels(lock_icon)
     else:
         sense.set_pixels(open_lock_icon)
-    
+
     if measuring:
         print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
-
