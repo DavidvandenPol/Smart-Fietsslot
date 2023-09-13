@@ -128,7 +128,7 @@ while True:
     if measuring:
         if showRedLock:
             sense.set_pixels(closedLockIcon)
-            showRed = False
+            showRedLock = False
         elif showNoLock:
             sense.set_pixels(noIcon)
             showNoLock = False
