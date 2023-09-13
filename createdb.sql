@@ -11,8 +11,7 @@ CREATE TABLE gps_locations (
 );
 CREATE TABLE gyro_notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notification TINYTEXT DEFAULT NULL
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE USER 'sensem'@'localhost' IDENTIFIED BY 'h@';
 GRANT INSERT ON smartfiets.gps_locations TO 'sensem'@'localhost';

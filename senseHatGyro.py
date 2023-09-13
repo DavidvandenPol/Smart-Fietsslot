@@ -122,12 +122,7 @@ while True:
                 if speedNotificationTime is None:
                     speedNotificationTime = time.time()
                     showRedLock = True
-                    #print to DB
-                    insert_query = "INSERT INTO gyro_notifications (notification ) VALUES (%s)"
-                    cursor.execute(insert_query,("snelle beweging!"))
-                    
-                    mariadb_connection.commit()
-                             
+
                 print("Verschillingsmelding: Grote verandering in versnelling!")
                 sound.play()  
                 
