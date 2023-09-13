@@ -1,5 +1,8 @@
 from sense_hat import SenseHat
 import time
+import MySQLdb as mariadb
+
+
 
 sense = SenseHat()
 
