@@ -1,6 +1,7 @@
 from sense_hat import SenseHat
 import time
 import MySQLdb as mariadb
+import pygame
 
 dbconfig = {
     'user': 'sensem',
@@ -9,10 +10,16 @@ dbconfig = {
     'database': 'smartfiets'
 }
 
+pygame.init()
+pygame.mixer.init()
+
+sound = pygame.mixer.Sound("alarm.wav")
+
 sense = SenseHat()
 
-acceleration_threshold = 1
-speed_threshold = 2
+acceleration_threshold = 5
+speed_threshold = 5
+
 
 prevAcceleration = None
 speedNotificationTime = None
@@ -77,6 +84,7 @@ while True:
         if event.action == "pressed" and event.direction == "middle":
             if measuring:
                 measuring = False
+                sound.stop()
                 speedNotificationTime = None
                 sense.set_pixels(openLockIcon)
                 print("Meten gestopt.")
@@ -118,11 +126,11 @@ while True:
                     insert_query = "INSERT INTO gyro_notifications (notification ) VALUES (%s)"
                     cursor.execute(insert_query,("snelle beweging!"))
                     
-                    mariadb_connection.commit()                    
-                    
+                    mariadb_connection.commit()
+                             
                 print("Verschillingsmelding: Grote verandering in versnelling!")
+                sound.play()  
                 
-
             if speedNotificationTime is not None:
                 if time.time() - speedNotificationTime >= blinkDuration:
                     speedNotificationTime = None
@@ -132,7 +140,8 @@ while True:
                     showNoLock = True
                 else:
                     showRedLock = True
-
+                    sound.play()  
+                    
         prevAcceleration = acceleration
 
     if measuring:
