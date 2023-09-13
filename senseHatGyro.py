@@ -3,6 +3,13 @@ import time
 import MySQLdb as mariadb
 import pygame
 
+dbconfig = {
+    'user': 'sensem',
+    'password': 'h@',
+    'host': 'localhost',
+    'database': 'smartfiets'
+}
+
 pygame.init()
 pygame.mixer.init()
 
@@ -81,10 +88,18 @@ while True:
                 speedNotificationTime = None
                 sense.set_pixels(openLockIcon)
                 print("Meten gestopt.")
+                
+                mariadb_connection.close()
+                print("DB disconnected")
             else:
                 measuring = True
                 sense.set_pixels(openLockIcon)
                 print("Meten gestart.")
+                
+                mariadb_connection = mariadb.connect(**dbconfig)
+                cursor = mariadb_connection.cursor()
+                
+                print("DB connected")
 
     if measuring:
         acceleration = sense.get_accelerometer_raw()
@@ -106,7 +121,13 @@ while True:
             if total_delta > acceleration_threshold:
                 if speedNotificationTime is None:
                     speedNotificationTime = time.time()
-                    showRedLock = True    
+                    showRedLock = True
+                    #print to DB
+                    insert_query = "INSERT INTO gyro_notifications (notification ) VALUES (%s)"
+                    cursor.execute(insert_query,("snelle beweging!"))
+                    
+                    mariadb_connection.commit()
+                             
                 print("Verschillingsmelding: Grote verandering in versnelling!")
                 sound.play()  
                 
