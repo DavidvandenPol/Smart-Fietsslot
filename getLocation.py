@@ -20,7 +20,7 @@ while True:
     if report['class'] == 'TPV':
         mariadb_connection = mariadb.connect(**dbconfig)
         if verbose:
-            print("Database connected")
+            print("DB connected")
         
         cursor = mariadb_connection.cursor()
         report = gpsd.next()
@@ -33,12 +33,16 @@ while True:
             print(latitude_values)
             
             insert_query = "INSERT INTO gps_locations (longitude, latitude) VALUES (%s, %s)"
+            insert_delete_row = "DELETE FROM gps_locations ORDER BY id LIMIT 1;"
+
             cursor.execute(insert_query, (longitude_values, latitude_values))
+            cursor.execute(insert_delete_row)
 
             mariadb_connection.commit()
 
             if verbose:
-                print("Locatie committed")
+                print("done")
+
 
         cursor.close()
         mariadb_connection.close()
