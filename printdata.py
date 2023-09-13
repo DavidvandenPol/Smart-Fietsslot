@@ -20,8 +20,8 @@ while True:
         row = cursor.fetchone()
 
         if row:
-            latitude = row[0]
-            longitude = row[1]
+            latitude = float(row[0])
+            longitude = float(row[1])
 
             gps_data = {
                 'latitude': latitude,
