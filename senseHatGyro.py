@@ -3,13 +3,6 @@ import time
 import MySQLdb as mariadb
 import pygame
 
-dbconfig = {
-    'user': 'sensem',
-    'password': 'h@',
-    'host': 'localhost',
-    'database': 'smartfiets'
-}
-
 pygame.init()
 pygame.mixer.init()
 
@@ -89,17 +82,10 @@ while True:
                 sense.set_pixels(openLockIcon)
                 print("Meten gestopt.")
                 
-                mariadb_connection.close()
-                print("DB disconnected")
             else:
                 measuring = True
                 sense.set_pixels(openLockIcon)
                 print("Meten gestart.")
-                
-                mariadb_connection = mariadb.connect(**dbconfig)
-                cursor = mariadb_connection.cursor()
-                
-                print("DB connected")
 
     if measuring:
         acceleration = sense.get_accelerometer_raw()
@@ -150,5 +136,5 @@ while True:
     else:
         sense.set_pixels(openLockIcon)
 
-    if measuring:
-        print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
+    #if measuring:
+        #print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
