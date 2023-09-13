@@ -1,43 +1,26 @@
-import time
+#!/usr/bin/python3
+
 import MySQLdb as mariadb
 import json
 
-interval = 1
+mariadb_connection = mariadb.connect(
+    user='sensem',
+    password='h@',
+    database='smartfiets')
 
-dbconfig = {
-    'user': 'sensem',
-    'password': 'h@',
-    'host': 'localhost',
-    'database': 'smartfiets'
+cursor = mariadb_connection.cursor()
+
+stmt = "SELECT latitude, longitude FROM gps_locations ORDER BY created_date DESC LIMIT 1"
+
+cursor.execute(stmt)
+row = cursor.fetchone()
+cursor.close()
+mariadb_connection.close()
+
+output_json = {
+    "long":  float(row[0]),
+    "lat": float(row[1])
 }
 
-while True:
-    try:
-        mariadb_connection = mariadb.connect(**dbconfig)
-        cursor = mariadb_connection.cursor()
-
-        cursor.execute("SELECT latitude, longitude FROM gps_locations ORDER BY created_date DESC LIMIT 1")
-        row = cursor.fetchone()
-
-        if row:
-            latitude = float(row[0])
-            longitude = float(row[1])
-
-            gps_data = {
-                'latitude': latitude,
-                'longitude': longitude
-            }
-
-            gps_json = json.dumps(gps_data)
-
-            print("Laatste GPS-gegevens in JSON-formaat:")
-            print(gps_json)
-        else:
-            print("Geen GPS-gegevens beschikbaar.")
-
-        mariadb_connection.close()
-
-    except mariadb.Error as e:
-        print(f"Fout bij het verbinden met de database: {e}")
-
-    time.sleep(interval)
+print("Content-type: application/json\n")
+print(json.dumps(output_json))

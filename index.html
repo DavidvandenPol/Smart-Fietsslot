@@ -7,26 +7,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <div class="">
-        <iframe id="googleMapsIframe" height="500px" width="100%"></iframe>
-        <div class="w-full h-52 absolute bottom-0 -mt-8 bg-white rounded-t-3xl shadow-md">
-            <div class="py-6 px-4">
-                <p class="font-bold">Informatie over je fiets</p>
-                <p class="text-sm text-gray-400">Swipe omhoog voor meer info</p>
+    <div class="absolute top-4 bg-white mx-auto w-full">
+        <div class="p-4 flex gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F3A730" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <div class="self-center text-gray-500">
+                Er is beweging bij je fiets!
             </div>
+        </div>
+    </div>
+    <iframe id="googleMapsIframe" height="500px" width="100%"></iframe>
+    <div class="w-full h-52 absolute bottom-0 -mt-8 bg-white rounded-t-3xl shadow-md">
+        <div class="py-6 mx-4 border-b border-container">
+            <p class="font-bold">Informatie over je fiets</p>
+            <p class="text-gray-400 text-sm">Swipe omhoog voor meer info</p>
         </div>
     </div>
 
     <script>
-        function loadGoogleMaps() {
+        async function fetchLocation() {
+            const API = "http://10.80.17.1/smartfiets/printdata.py";
+
+            try {
+                const response = await fetch(API);
+                const data = await response.json();
+
+                if (data.lat && data.long) {
+                    console.log(data.lat);
+                    console.log(data.long);
+                    loadGoogleMaps(data.lat, data.long); // Roep loadGoogleMaps op met de opgehaalde breedte- en lengtegraad.
+                } else {
+                    console.error("Latitude and Longitude not found in the response.");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        function loadGoogleMaps(latitude, longitude) {
             const googleMapsIframe = document.getElementById("googleMapsIframe");
-            const latitude = 52.0;
-            const longitude = 6.23;
             
             googleMapsIframe.src = `https://maps.google.com/maps?q=${latitude},${longitude}&hl=nl;&output=embed&disableDefaultUI=true&disableMapTypeControls=true&disableScale=true&disableStreetView=true&disablePan=true&disableZoom=true`;
         }
-    
-        window.addEventListener("load", loadGoogleMaps);
-    </script>    
+
+        window.addEventListener("load", () => {
+            fetchLocation();
+        });
+    </script>
 </body>
 </html>
