@@ -1,77 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fietsslot</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
-<body>
-    <div class="absolute top-4 bg-white mx-auto w-full rounded-xl shadow-md">
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </head>
+  <body>
+    <div
+      class="absolute top-4 mx-auto w-full"
+      x-data="{ gyroNotification: false }"
+    >
+      <div x-show="this.gyroNotification" class="bg-white rounded-xl shadow-md">
         <div class="p-4 flex gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F3A730" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-            <div class="self-center text-gray-500">
-                Er is beweging bij je fiets!
-            </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#F3A730"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" x2="12" y1="8" y2="12" />
+            <line x1="12" x2="12.01" y1="16" y2="16" />
+          </svg>
+          <div class="self-center text-gray-500">
+            Er is beweging bij je fiets!
+          </div>
         </div>
+      </div>
     </div>
-    <iframe class="bg-gray-200" id="googleMapsIframe" height="500px" width="100%"></iframe>
-    <div class="w-full h-56 absolute bottom-0 -mt-8 bg-white rounded-t-3xl shadow-md">
-        <div class="py-4 mx-4 border-b border-container">
-            <p class="font-bold">Informatie over je fiets</p>
-            <p class="text-gray-400 text-sm">Swipe omhoog voor meer info</p>
+    <iframe
+      class="bg-gray-200"
+      id="googleMapsIframe"
+      height="500px"
+      width="100%"
+    ></iframe>
+    <div
+      class="w-full h-56 absolute bottom-0 -mt-8 bg-white rounded-t-3xl shadow-md"
+    >
+      <div class="py-4 mx-4 border-b border-container">
+        <p class="font-bold">Informatie over je fiets</p>
+        <p class="text-gray-400 text-sm">Swipe omhoog voor meer info</p>
+      </div>
+      <div class="flex mx-4 gap-4 pt-4">
+        <img src="./bicycle.png" width="42px" height="42px" />
+        <div class="self-center text-sm text-gray-400">
+          Je fiets staat op slot
         </div>
-        <div class="flex mx-4 gap-4 pt-4">
-            <img src="./bicycle.png" width="42px" height="42px" />
-            <div class="self-center text-sm text-gray-400">
-                Je fiets staat op slot
-            </div>
-        </div>
-        <div class="mx-4">
-            <button class="bg-[#181716] text-white w-full py-4 mt-6 font-semibold">Fiets van het slot halen</button>
-        </div>
+      </div>
+      <div class="mx-4">
+        <button class="bg-[#181716] text-white w-full py-4 mt-6 font-semibold">
+          Fiets van het slot halen
+        </button>
+      </div>
     </div>
 
     <script>
-        async function fetchLocation() {
+      async function fetchLocation() {
         const API = "http://10.80.17.1/smartfiets/printdata.py";
 
         try {
-            const response = await fetch(API);
-            const data = await response.json();
+          const response = await fetch(API);
+          const data = await response.json();
 
-            // GPS Location
-            if (data[0].location && data[0].location.lat && data[0].location.long) {
-                loadGoogleMaps(data[0].location.long, data[0].location.lat);
-            } 
-                else {
-                    console.error("Latitude and Longitude not found in the response.");
-                    loadGoogleMaps("52", "6.2");
-                }
+          // GPS Location
+          if (
+            data[0].location &&
+            data[0].location.lat &&
+            data[0].location.long
+          ) {
+            loadGoogleMaps(data[0].location.long, data[0].location.lat);
+          } else {
+            console.error("Latitude and Longitude not found in the response.");
+            loadGoogleMaps("52", "6.2");
+          }
 
-                // Gyro Notification
-                const gyroNotification = data[0].notification || 0;
-                console.log(gyroNotification);
+          // Gyro Notification
+          const gyroNotification = Boolean(data[0].notification || 0);
+          //   const test = document.querySelectorAll('style="display: none;"');
+          console.log(gyroNotification);
 
-                // Lock notification
-                const lockNotification = data[0].islocked || 0;
-                console.log(lockNotification);
-            } 
-            catch (error) {
-                console.error("Error fetching data:", error);
+          if (gyroNotification === true) {
+            // Verwijder het style-attribuut van het element met x-show
+            const elementMetStyle = document.querySelector(
+              '[x-show="this.gyroNotification"]'
+            );
+            if (elementMetStyle) {
+              elementMetStyle.removeAttribute("style");
             }
-        }
+          }
 
-        function loadGoogleMaps(latitude, longitude) {
-            const googleMapsIframe = document.getElementById("googleMapsIframe");
-            
-            googleMapsIframe.src = `https://maps.google.com/maps?q=${latitude},${longitude}&hl=nl;&output=embed&disableDefaultUI=true&disableMapTypeControls=true&disableScale=true&disableStreetView=true&disablePan=true&disableZoom=true`;
+          const lockNotification = data[0].islocked || 0;
+          console.log(lockNotification);
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
+      }
 
-        window.addEventListener("load", () => {
-            fetchLocation();
-        });
+      function loadGoogleMaps(latitude, longitude) {
+        const googleMapsIframe = document.getElementById("googleMapsIframe");
+
+        googleMapsIframe.src = `https://maps.google.com/maps?q=${latitude},${longitude}&hl=nl;&output=embed&disableDefaultUI=true&disableMapTypeControls=true&disableScale=true&disableStreetView=true&disablePan=true&disableZoom=true`;
+      }
+
+      window.addEventListener("load", () => {
+        fetchLocation();
+      });
     </script>
-</body>
+  </body>
 </html>
