@@ -138,18 +138,24 @@ while True:
                     showRedLock = True
 
                 print("Verschillingsmelding: Grote verandering in versnelling!")
+                cursor = mariadb_connection.cursor()
+                cursor.execute("UPDATE gyro_notifications SET notification = TRUE WHERE id = 1")
+                mariadb_connection.commit()
                 sound.play()  
                 
             if speedNotificationTime is not None:
                 if time.time() - speedNotificationTime >= blinkDuration:
                     speedNotificationTime = None
                     showRedLock = False
+                    cursor = mariadb_connection.cursor()
+                    cursor.execute("UPDATE gyro_notifications SET notification = FALSE WHERE id = 1")
+                    mariadb_connection.commit()
                 elif (time.time() - speedNotificationTime) % (2 * blinkInterval) < blinkInterval:
                     showRedLock = False
                     showNoLock = True
                 else:
                     showRedLock = True
-                    sound.play()  
+                    sound.play()
                     
         prevAcceleration = acceleration
 
