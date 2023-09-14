@@ -35,31 +35,30 @@
 
     <script>
         async function fetchLocation() {
-            const API = "http://10.80.17.1/smartfiets/printdata.py";
+        const API = "http://10.80.17.1/smartfiets/printdata.py";
 
-            try {
-                const response = await fetch(API);
-                const data = await response.json();
+        try {
+            const response = await fetch(API);
+            const data = await response.json();
 
-                // GPS Location
-                if (data.lat && data.long) {
-                    loadGoogleMaps(data.lat, data.long);
-                } else {
+            // GPS Location
+            if (data[0].location && data[0].location.lat && data[0].location.long) {
+                loadGoogleMaps(data[0].location.lat, data[0].location.long);
+            } 
+                else {
                     console.error("Latitude and Longitude not found in the response.");
-                    loadGoogleMaps("52", "6.2")
+                    loadGoogleMaps("52", "6.2");
                 }
 
                 // Gyro Notification
-                if (data.notification) {
-                }
-                console.log(data.notification)
+                const gyroNotification = data[0].notification || 0;
+                console.log(gyroNotification);
 
                 // Lock notification
-                if (data.islocked) {
-                }
-                console.log(data.islocked)
-
-            } catch (error) {
+                const lockNotification = data[0].islocked || 0;
+                console.log(lockNotification);
+            } 
+            catch (error) {
                 console.error("Error fetching data:", error);
             }
         }
