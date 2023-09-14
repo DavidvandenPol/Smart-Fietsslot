@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fietsslot</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
     <div class="absolute top-4 bg-white mx-auto w-full rounded-xl shadow-md">
@@ -15,7 +16,7 @@
             </div>
         </div>
     </div>
-    <iframe class="bg-black" id="googleMapsIframe" height="500px" width="100%"></iframe>
+    <iframe class="bg-gray-200" id="googleMapsIframe" height="500px" width="100%"></iframe>
     <div class="w-full h-56 absolute bottom-0 -mt-8 bg-white rounded-t-3xl shadow-md">
         <div class="py-4 mx-4 border-b border-container">
             <p class="font-bold">Informatie over je fiets</p>
@@ -41,10 +42,12 @@
                 const data = await response.json();
 
                 if (data.lat && data.long) {
-                    loadGoogleMaps(data.lat, data.long); // Roep loadGoogleMaps op met de opgehaalde breedte- en lengtegraad.
+                    loadGoogleMaps(data.lat, data.long);
                 } else {
                     console.error("Latitude and Longitude not found in the response.");
+                    loadGoogleMaps("52", "6.2")
                 }
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
