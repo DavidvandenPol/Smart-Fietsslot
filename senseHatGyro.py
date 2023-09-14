@@ -106,6 +106,10 @@ while True:
                 insert_query_notlocked = "UPDATE gyro_status SET islocked = false;"
                 cursor.execute(insert_query_notlocked)
                 mariadb_connection.commit()
+
+                cursor = mariadb_connection.cursor()
+                cursor.execute("UPDATE gyro_notifications SET notification = FALSE WHERE id = 1")
+                mariadb_connection.commit()
                 cursor.close()
                 mariadb_connection.close()
             else:
