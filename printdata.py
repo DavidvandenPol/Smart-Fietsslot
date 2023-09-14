@@ -11,7 +11,6 @@ mariadb_connection = mariadb.connect(
 cursor = mariadb_connection.cursor()
 
 stmt = "SELECT latitude, longitude FROM gps_locations ORDER BY created_date DESC LIMIT 1"
-
 cursor.execute(stmt)
 row = cursor.fetchone()
 
@@ -39,7 +38,7 @@ output_json_3 = {
 cursor.close()
 mariadb_connection.close()
 
+combined_json = [output_json, output_json_2, output_json_3]
+
 print("Content-type: application/json\n")
-print(json.dumps(output_json))
-print(json.dumps(output_json_2))
-print(json.dumps(output_json_3))
+print(json.dumps(combined_json))

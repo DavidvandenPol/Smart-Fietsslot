@@ -41,12 +41,23 @@
                 const response = await fetch(API);
                 const data = await response.json();
 
+                // GPS Location
                 if (data.lat && data.long) {
                     loadGoogleMaps(data.lat, data.long);
                 } else {
                     console.error("Latitude and Longitude not found in the response.");
                     loadGoogleMaps("52", "6.2")
                 }
+
+                // Gyro Notification
+                if (data.notification) {
+                }
+                console.log(data.notification)
+
+                // Lock notification
+                if (data.islocked) {
+                }
+                console.log(data.islocked)
 
             } catch (error) {
                 console.error("Error fetching data:", error);
