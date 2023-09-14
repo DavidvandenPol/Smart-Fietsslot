@@ -43,7 +43,7 @@
 
             // GPS Location
             if (data[0].location && data[0].location.lat && data[0].location.long) {
-                loadGoogleMaps(data[0].location.lat, data[0].location.long);
+                loadGoogleMaps(data[0].location.long, data[0].location.lat);
             } 
                 else {
                     console.error("Latitude and Longitude not found in the response.");
