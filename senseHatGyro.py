@@ -10,9 +10,15 @@ sound = pygame.mixer.Sound("alarm.wav")
 
 sense = SenseHat()
 
-acceleration_threshold = 5
-speed_threshold = 5
+dbconfig = {
+    'user': 'sensem',
+    'password': 'h@',
+    'host': 'localhost',
+    'database': 'smartfiets'
+}
 
+acceleration_threshold = 3
+speed_threshold = 3
 
 prevAcceleration = None
 speedNotificationTime = None
@@ -70,8 +76,20 @@ noIcon = [
     b, b, b, b, b, b, b, b,
     b, b, b, b, b, b, b, b
 ]
+mariadb_connection = mariadb.connect(**dbconfig)
+cursor = mariadb_connection.cursor()
+
+insert_query_1 = "DELETE FROM gyro_status ORDER BY id LIMIT 1"
+insert_query_2 = "INSERT INTO gyro_status VALUES(1,false)"
+cursor.execute(insert_query_1)
+cursor.execute(insert_query_2)
+mariadb_connection.commit()
+
 
 while True:
+    mariadb_connection = mariadb.connect(**dbconfig)
+    cursor = mariadb_connection.cursor()
+    
     events = sense.stick.get_events()
     for event in events:
         if event.action == "pressed" and event.direction == "middle":
@@ -82,11 +100,21 @@ while True:
                 sense.set_pixels(openLockIcon)
                 print("Meten gestopt.")
                 
+                insert_query_notlocked = "UPDATE gyro_status SET islocked = false;"
+                cursor.execute(insert_query_notlocked)
+                mariadb_connection.commit()
+                cursor.close()
+                mariadb_connection.close()
             else:
                 measuring = True
                 sense.set_pixels(openLockIcon)
                 print("Meten gestart.")
-
+                
+                insert_query_locked = "UPDATE gyro_status SET islocked = true;"
+                cursor.execute(insert_query_locked)
+                mariadb_connection.commit()
+                cursor.close()
+                mariadb_connection.close()
     if measuring:
         acceleration = sense.get_accelerometer_raw()
         x = acceleration['x']
@@ -139,3 +167,4 @@ while True:
 
     #if measuring:
         #print(f"Acceleratie - X: {x:.2f}, Y: {y:.2f}, Z: {z:.2f}")
+
