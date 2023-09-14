@@ -84,21 +84,6 @@
             loadGoogleMaps("52", "6.2");
           }
 
-          // Gyro Notification
-          const gyroNotification = Boolean(data[0].notification || 0);
-          //   const test = document.querySelectorAll('style="display: none;"');
-          console.log(gyroNotification);
-
-          if (gyroNotification === true) {
-            // Verwijder het style-attribuut van het element met x-show
-            const elementMetStyle = document.querySelector(
-              '[x-show="this.gyroNotification"]'
-            );
-            if (elementMetStyle) {
-              elementMetStyle.removeAttribute("style");
-            }
-          }
-
           const lockNotification = data[0].islocked || 0;
           console.log(lockNotification);
         } catch (error) {
@@ -112,9 +97,37 @@
         googleMapsIframe.src = `https://maps.google.com/maps?q=${latitude},${longitude}&hl=nl;&output=embed&disableDefaultUI=true&disableMapTypeControls=true&disableScale=true&disableStreetView=true&disablePan=true&disableZoom=true`;
       }
 
+      async function gyroNotification() {
+        const API = "http://10.80.17.1/smartfiets/printdata.py";
+
+        try {
+          const response = await fetch(API);
+          const data = await response.json();
+
+          const gyroNotifications = Boolean(data[0].notification || 0);
+          console.log(gyroNotifications); // Gebruik de nieuwe parameter naam
+
+          if (gyroNotifications === true) {
+            const elementMetStyle = document.querySelector(
+              '[x-show="this.gyroNotification"]'
+            );
+            if (elementMetStyle) {
+              elementMetStyle.removeAttribute("style");
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+
       window.addEventListener("load", () => {
+        gyroNotification();
         fetchLocation();
       });
+
+      setInterval(function () {
+        gyroNotification();
+      }, 2000);
     </script>
   </body>
 </html>
