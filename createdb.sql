@@ -23,6 +23,7 @@ CREATE USER 'sensem'@'localhost' IDENTIFIED BY 'h@';
 GRANT INSERT ON smartfiets.gps_locations TO 'sensem'@'localhost';
 GRANT INSERT ON smartfiets.gyro_status TO 'sensem'@'localhost';
 GRANT UPDATE ON smartfiets.gyro_status TO 'sensem'@'localhost';
+GRANT INSERT ON smartfiets.gyro_notifications TO 'sensem'@'localhost';
 GRANT UPDATE ON smartfiets.gyro_notifications TO 'sensem'@'localhost';
 GRANT SELECT ON smartfiets.* TO 'sensem'@'localhost';
 GRANT DELETE ON smartfiets.* TO 'sensem'@'localhost';

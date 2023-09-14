@@ -15,11 +15,11 @@ stmt = "SELECT latitude, longitude FROM gps_locations ORDER BY created_date DESC
 cursor.execute(stmt)
 row = cursor.fetchone()
 
-
 output_json = {
     "long":  float(row[0]),
-    "lat": float(row[1]),
+    "lat": float(row[1])
 }
+
 stmt_2 = "SELECT islocked FROM gyro_status;"
 cursor.execute(stmt_2)
 row = cursor.fetchone()
@@ -28,9 +28,18 @@ output_json_2 = {
     "islocked": round(float(row[0]))
 }
 
+stmt_3 = "SELECT notification FROM gyro_notifications;"
+cursor.execute(stmt_3)
+row = cursor.fetchone()
+
+output_json_3 = {
+    "notification": round(float(row[0]))
+}
+
 cursor.close()
 mariadb_connection.close()
 
 print("Content-type: application/json\n")
 print(json.dumps(output_json))
 print(json.dumps(output_json_2))
+print(json.dumps(output_json_3))

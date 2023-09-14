@@ -85,6 +85,9 @@ cursor.execute(insert_query_1)
 cursor.execute(insert_query_2)
 mariadb_connection.commit()
 
+insert_notification = "INSERT INTO gyro_notifications (notification) VALUES (FALSE);"
+cursor.execute(insert_notification)
+mariadb_connection.commit()
 
 while True:
     mariadb_connection = mariadb.connect(**dbconfig)
